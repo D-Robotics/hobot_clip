@@ -1,0 +1,25 @@
+# Action Request
+# 类型, true: 图片, false: 文本
+bool type
+
+# 待计算图片路径, 当 type==true生效
+string[] urls
+
+# 待计算文本, 当type==false生效
+string[] texts
+
+---
+# Action Result
+# 结果标志, 获取成功为true, 失败为false
+bool success
+
+# 错误码, 仅任务失败时有效, 反馈失败原因
+int32 error_code
+
+---
+# Action Feedback
+# 当前计算进度
+float32 current_progress
+
+# 结果
+ClipItem item

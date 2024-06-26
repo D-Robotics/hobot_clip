@@ -1,0 +1,5 @@
+# Changelog for package clip manage node
+
+tros_0.1.0 (2024-06-26)
+------------------
+1. 新增CLIP图文特征收发管理中台节点。
