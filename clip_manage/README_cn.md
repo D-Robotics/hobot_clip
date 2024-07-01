@@ -91,7 +91,7 @@ ros package：
 
 运行模式 1 前, 请先启动[clip_encode_image](./../clip_encode_image/README.md)
 
-运行模式 2 前, 请先启动[clip_encode_image](./../clip_encode_text/README.md)
+运行模式 2 前, 请先启动[clip_encode_text](./../clip_encode_text/README.md)
 
 ## X5 Ubuntu系统上运行
 
