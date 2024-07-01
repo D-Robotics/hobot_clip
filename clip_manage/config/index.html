@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .gallery-item {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .gallery-item img {
+            width: 350px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>CLIP Query Image Result</h1>
+    <div class="gallery" id="gallery">
+        <!-- Images will be loaded here by JavaScript -->
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const gallery = document.getElementById('gallery');
+            const imageFolder = 'result/';
+            const refreshInterval = 5000; // 5 seconds
+
+            async function loadImages() {
+                try {
+                    const images = await fetchImages(imageFolder);
+                    gallery.innerHTML = ''; // Clear existing images
+
+                    images.forEach(image => {
+                        const imgContainer = document.createElement('div');
+                        imgContainer.classList.add('gallery-item');
+
+                        const img = document.createElement('img');
+                        img.src = `${imageFolder}${image}?t=${new Date().getTime()}`; // Add timestamp to avoid caching
+                        img.alt = image;
+
+                        const caption = document.createElement('p');
+                        caption.textContent = image;
+
+                        imgContainer.appendChild(caption);
+                        imgContainer.appendChild(img);
+                        gallery.appendChild(imgContainer);
+                    });
+                } catch (error) {
+                    console.error('Error fetching images:', error);
+                }
+            }
+
+            async function fetchImages(folder) {
+                const response = await fetch(folder);
+                const data = await response.text();
+                const parser = new DOMParser();
+                const htmlDoc = parser.parseFromString(data, 'text/html');
+                const links = htmlDoc.getElementsByTagName('a');
+                const images = [];
+
+                for (let i = 0; i < links.length; i++) {
+                    const href = links[i].getAttribute('href');
+                    if (isImageFile(href)) {
+                        images.push(href);
+                    }
+                }
+
+                return images;
+            }
+
+            function isImageFile(filename) {
+                return /\.(jpe?g|png|gif)$/i.test(filename);
+            }
+
+            // Initial load
+            loadImages();
+
+            // Set interval for refreshing images
+            setInterval(loadImages, refreshInterval);
+        });
+    </script>
+</body>
+</html>
