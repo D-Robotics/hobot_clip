@@ -176,7 +176,7 @@ int ClipNode::Run() {
         std::system(command2.c_str());
         for (int i = 0; i < target_items.size(); i++) {
           auto& item = target_items[i];
-          RCLCPP_INFO(rclcpp::get_logger("ClipNode"),
+          RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
               "Query Result %s, similarity: %f", item.url.c_str(), item.similarity);
           std::string command = "ln -s " + item.url + " " + result_folder_ + "/" + std::to_string(i) + ".jpg";
           int result = std::system(command.c_str());

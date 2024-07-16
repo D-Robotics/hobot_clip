@@ -49,8 +49,8 @@ private:
   int mode_ = 0; // mode 为 0, 入库, mode 为 1, 查询
   std::string db_file_ = "clip.db";
   std::string text_ = "a diagram";
-  std::string storage_folder_ = "config";
-  std::string result_folder_ = "result";
+  std::string storage_folder_ = "/userdata/config";
+  std::string result_folder_ = "/userdata/result";
   ClipItemDatabase db;
 
   int topk_ = 10;

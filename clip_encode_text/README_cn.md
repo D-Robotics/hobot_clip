@@ -4,7 +4,7 @@
 
 CLIP（https://github.com/openai/CLIP/）是由OpenAI提出的一种多模态机器学习模型。该模型通过对大规模图像和文本对进行对比学习，能够同时处理图像和文本，并将它们映射到一个共享的向量空间中。
 
-本项目是 CLIP 文本编码器边缘端推理节点, 目前支持两种模式：
+本项目是 CLIP 文本编码器推理节点, 目前支持两种模式：
 1. 本地模式：支持回灌输入, 输出文本编码特征。
 2. 服务模式：基于Ros Action Server, 支持Clinet节点发送推理请求, 计算返回的文本编码特征。
 
@@ -97,8 +97,10 @@ ros package：
 export COLCON_CURRENT_PREFIX=./install
 source /opt/ros/humble/setup.bash
 source ./install/local_setup.bash
-# config中为示例使用的模型，回灌使用的本地图片
-cp -r install/lib/clip_encode_text/config/ .
+# 下载模型并解压
+wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+mkdir -p config
+sudo tar -xf text_encoder.tar.gz -C config
 
 # 运行模式1：使用文本进行回灌预测并保存特征值
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=false -p dump_result:=true
@@ -113,8 +115,10 @@ ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --
 export ROS_LOG_DIR=/userdata/
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 
-# config中为示例使用的模型，回灌使用的本地图片
-cp -r install/lib/clip_encode_text/config/ .
+# 下载模型并解压
+wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+mkdir -p config
+sudo tar -xf text_encoder.tar.gz -C config
 
 # 运行模式1：使用文本进行回灌预测并保存特征值
 ./install/lib/clip_encode_text/clip_encode_text_node --ros-args -p feed_type:=false -p dump_result:=true
@@ -136,6 +140,7 @@ log：
 # 运行终端1：启动服务 模式
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --log-level info
 
+# 运行终端2：发送请求
 ros2 action send_goal /clip_text_action clip_msgs/action/GetFeatures "{type: false, urls: [], texts: ['a diagram', 'a dog', 'a cat']}"
 ```
 

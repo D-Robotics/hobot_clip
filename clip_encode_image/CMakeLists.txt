@@ -104,4 +104,9 @@ install(DIRECTORY
   DESTINATION lib/${PROJECT_NAME}/config/
 )
 
+install(FILES
+  ${PROJECT_SOURCE_DIR}/config/CLIP.png
+  DESTINATION lib/${PROJECT_NAME}/config/
+)
+
 ament_package()
