@@ -43,7 +43,7 @@ def generate_launch_description():
         "clip_storage_folder", default_value=TextSubstitution(text="/userdata/config")
     )
     result_folder_launch_arg = DeclareLaunchArgument(
-        "clip_result_folder", default_value=TextSubstitution(text="result")
+        "clip_result_folder", default_value=TextSubstitution(text="/userdata/result")
     )
 
     # recorder node 示例节点pkg
