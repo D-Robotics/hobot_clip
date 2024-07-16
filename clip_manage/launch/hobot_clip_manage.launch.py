@@ -16,26 +16,22 @@ import os
 
 from launch import LaunchDescription
 from launch_ros.actions import Node
-
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
+from launch.substitutions import TextSubstitution
 from ament_index_python.packages import get_package_prefix
 
 def generate_launch_description():
     index_path = os.path.join(
         get_package_prefix('clip_manage'),
         "lib/clip_manage/config/")
-    cp_cmd = "cp -r " + index_path + "/config ."
+    cp_cmd = "cp -r " + index_path + "index.html ."
     print("cp_cmd is ", cp_cmd)
     os.system(cp_cmd)
 
-    cmd = "python -m http.server"
-    print(cmd)
-    os.system(cmd)
-
     # args that can be set from the command line or a default will be used
     mode_launch_arg = DeclareLaunchArgument(
-        "clip_mode", default_value=TextSubstitution(text="1")
+        "clip_mode", default_value=TextSubstitution(text="0")
     )
     db_file_launch_arg = DeclareLaunchArgument(
         "clip_db_file", default_value=TextSubstitution(text="clip.db")
@@ -44,10 +40,10 @@ def generate_launch_description():
         "clip_text", default_value=TextSubstitution(text="a diagram")
     )
     storage_folder_launch_arg = DeclareLaunchArgument(
-        "clip_storage_folder", default_value=TextSubstitution(text="config")
+        "clip_storage_folder", default_value=TextSubstitution(text="/userdata/config")
     )
     result_folder_launch_arg = DeclareLaunchArgument(
-        "clip_result_folder", default_value=TextSubstitution(text="result")
+        "clip_result_folder", default_value=TextSubstitution(text="/userdata/result")
     )
 
     # recorder node 示例节点pkg

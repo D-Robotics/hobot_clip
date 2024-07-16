@@ -10,8 +10,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('lib/' + package_name + '/config', 
-            ['config/' + 'text_encoder.onnx']),
         ('lib/python3.10/site-packages/' + package_name + '/clip', 
             ['config/' + 'bpe_simple_vocab_16e6.txt.gz'])
     ],

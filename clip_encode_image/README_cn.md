@@ -4,7 +4,7 @@
 
 CLIP（https://github.com/openai/CLIP/）是由OpenAI提出的一种多模态机器学习模型。该模型通过对大规模图像和文本对进行对比学习，能够同时处理图像和文本，并将它们映射到一个共享的向量空间中。
 
-本项目是 CLIP 图像编码器边缘端推理节点, 目前支持两种模式：
+本项目是 CLIP 图像编码器推理节点, 目前支持两种模式：
 1. 本地模式：支持回灌输入, 输出图像编码特征。
 2. 服务模式：基于Ros Action Server, 支持Clinet节点发送推理请求, 计算返回的图像编码特征。
 
@@ -48,6 +48,7 @@ ros package：
 - sensor_msgs
 - hbm_img_msgs
 - ai_msgs
+- clip_msgs
 
 hbm_img_msgs为自定义的图片消息格式，用于shared mem场景下的图片传输，hbm_img_msgs pkg定义在hobot_msgs中，因此如果使用shared mem进行图片传输，需要依赖此pkg。
 
@@ -143,8 +144,6 @@ cp -r install/lib/clip_encode_image/config/ .
 
 ```
 
-## 注意事项
-
 # 结果分析
 
 ## X5结果展示
@@ -156,6 +155,7 @@ log：
 # 运行终端1：启动订阅/服务 模式
 ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
 
+# 运行终端2：发送推理请求
 ros2 action send_goal /clip_image_action clip_msgs/action/GetFeatures "{type: true, urls: ['config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png'], texts: []}"
 ```
 

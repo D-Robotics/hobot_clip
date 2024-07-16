@@ -283,16 +283,16 @@ void ClipEncodeImageNode::RosImgProcess(
   // 2. 创建推理输出数据
   auto dnn_output = std::make_shared<EncodeImageOutput>();
   // 将图片消息的header填充到输出数据中，用于表示推理输出对应的输入信息
-  dnn_output->image_msg_header = std::make_shared<std_msgs::msg::Header>();
-  dnn_output->image_msg_header->set__frame_id(img_msg->header.frame_id);
-  dnn_output->image_msg_header->set__stamp(img_msg->header.stamp);
+  dnn_output->msg_header = std::make_shared<std_msgs::msg::Header>();
+  dnn_output->msg_header->set__frame_id(img_msg->header.frame_id);
+  dnn_output->msg_header->set__stamp(img_msg->header.stamp);
   // 将当前的时间戳填充到输出数据中，用于计算perf
   dnn_output->perf_preprocess.stamp_start.sec = time_start.tv_sec;
   dnn_output->perf_preprocess.stamp_start.nanosec = time_start.tv_nsec;
   dnn_output->perf_preprocess.set__type(model_name_ + "_preprocess");
 
   // 3. 开始预测
-  if (Run(inputs, dnn_output) != 0) {
+  if (Run(inputs, dnn_output, is_sync_mode_ == 1 ? true : false) != 0) {
     return;
   }    
 }
@@ -348,9 +348,9 @@ void ClipEncodeImageNode::SharedMemImgProcess(
   // 2. 创建推理输出数据
   auto dnn_output = std::make_shared<EncodeImageOutput>();
   // 将图片消息的header填充到输出数据中，用于表示推理输出对应的输入信息
-  dnn_output->image_msg_header = std::make_shared<std_msgs::msg::Header>();
-  dnn_output->image_msg_header->set__frame_id(std::to_string(img_msg->index));
-  dnn_output->image_msg_header->set__stamp(img_msg->time_stamp);
+  dnn_output->msg_header = std::make_shared<std_msgs::msg::Header>();
+  dnn_output->msg_header->set__frame_id(std::to_string(img_msg->index));
+  dnn_output->msg_header->set__stamp(img_msg->time_stamp);
   // 将当前的时间戳填充到输出数据中，用于计算perf
   dnn_output->perf_preprocess.stamp_start.sec = time_start.tv_sec;
   dnn_output->perf_preprocess.stamp_start.nanosec = time_start.tv_nsec;
@@ -358,7 +358,7 @@ void ClipEncodeImageNode::SharedMemImgProcess(
 
   uint32_t ret = 0;
   // 3. 开始预测
-  if (Run(inputs, dnn_output) != 0) {
+  if (Run(inputs, dnn_output, is_sync_mode_ == 1 ? true : false) != 0) {
     RCLCPP_ERROR(rclcpp::get_logger("ClipImageNode"), "Run Model Error");
     return;
   }
@@ -385,8 +385,10 @@ int ClipEncodeImageNode::FeedFromLocal(std::string& url) {
   dnn_output->perf_preprocess.stamp_start.nanosec = time_now.tv_nsec;
 
   std::shared_ptr<DNNTensor> tensor = nullptr;
+  float ratio;
   tensor = hobot::dnn_node::ImageProc::GetBGRTensorFromBGR(url,
-      model_input_height_, model_input_width_, tensor_properties);
+      model_input_height_, model_input_width_, tensor_properties,
+      ratio, hobot::dnn_node::ImageType::BGR, true, true, true);
 
   if (!tensor) {
     RCLCPP_ERROR(rclcpp::get_logger("ClipImageNode"),
@@ -406,7 +408,7 @@ int ClipEncodeImageNode::FeedFromLocal(std::string& url) {
   dnn_output->url = url;
 
   // 3. 开始预测
-  if (Run(inputs, dnn_output) != 0) {
+  if (Run(inputs, dnn_output, is_sync_mode_ == 1 ? true : false) != 0) {
     RCLCPP_ERROR(rclcpp::get_logger("ClipImageNode"), "Run Model Error");
     return -1;
   }

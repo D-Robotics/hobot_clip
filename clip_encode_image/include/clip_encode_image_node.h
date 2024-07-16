@@ -42,8 +42,6 @@ using hobot::dnn_node::DNNTensor;
 using hobot::dnn_node::ModelTaskType;
 
 struct EncodeImageOutput : public DnnNodeOutput {
-  std::shared_ptr<std_msgs::msg::Header> image_msg_header = nullptr;
-
   std::string url;  // encode 对应的url
 
   ai_msgs::msg::Perf perf_preprocess;
