@@ -1,6 +1,6 @@
 # Changelog for package clip encode text node
 
-tros_0.2.0 (2024-07-16)
+tros_0.2.0 (2024-09-06)
 ------------------
 1. 新增英文README。
 

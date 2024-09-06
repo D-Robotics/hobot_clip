@@ -110,7 +110,7 @@ ros2 run clip_manage clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p st
 
 # 运行模式2：查询, 输入检索文本, 查询数据库中的图片(需要先开启clip_encode_text的示例)
 # - 终端1：启动 clip_encode_text 服务模式
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --log-level info
 
@@ -149,7 +149,7 @@ cp -r ./install/lib/clip_encode_image/config .
 # 运行模式2：查询, 输入检索文本, 查询数据库中的图片(需要先开启clip_encode_text的示例)
 
 # - 终端1：启动 clip_encode_text 服务模式
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 ./install/lib/clip_encode_text/clip_encode_text_node --ros-args -p feed_type:=true --log-level info
 

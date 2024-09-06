@@ -98,7 +98,7 @@ export COLCON_CURRENT_PREFIX=./install
 source /opt/ros/humble/setup.bash
 source ./install/local_setup.bash
 # 下载模型并解压
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 mkdir -p config
 sudo tar -xf text_encoder.tar.gz -C config
 
@@ -116,7 +116,7 @@ export ROS_LOG_DIR=/userdata/
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 
 # 下载模型并解压
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 mkdir -p config
 sudo tar -xf text_encoder.tar.gz -C config
 
