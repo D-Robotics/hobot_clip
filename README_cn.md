@@ -24,7 +24,7 @@ CLIP（https://github.com/openai/CLIP/）是由OpenAI提出的一种多模态机
 运行命令：
 ```shell
 cp -r ./install/clip_encode_image/config .
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 ```
 

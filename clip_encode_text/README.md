@@ -116,7 +116,7 @@ export COLCON_CURRENT_PREFIX=./install
 source /opt/ros/humble/setup.bash
 source ./install/local_setup.bash
 # Download the model and decompress
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 
 # Run mode 1: Use text for recharge prediction and save feature values:
@@ -133,7 +133,7 @@ export ROS_LOG_DIR=/userdata/
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 
 # Download the model and decompress
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 
 # Run mode 1: Use text for recharge prediction and save feature values:

@@ -110,7 +110,7 @@ ros2 run clip_manage clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p st
 # Run mode 2: Query, sending text client, and search for images with features in the database (clip_encode_text node started is required)
 
 # - Terminal 1: Start clip_encode_text node service mode.
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --log-level info
 
@@ -155,7 +155,7 @@ cp -r ./install/lib/clip_encode_image/config .
 # Run mode 2: Query, sending text client, and search for images with features in the database (clip_encode_text node started is required)
 
 # - Terminal 1: Start clip_encode_text node service mode.
-wget http://sunrise.horizon.cc/models/clip_encode_text/text_encoder.tar.gz
+wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
 ./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
 
