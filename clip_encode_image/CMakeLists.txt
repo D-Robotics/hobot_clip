@@ -63,11 +63,13 @@ endif()
 message("CMAKE_SYSROOT is " ${CMAKE_SYSROOT})
 include_directories(
   ${CMAKE_SYSROOT}/usr/include/
+  ${CMAKE_SYSROOT}/usr/hobot/include/
   ${CMAKE_SYSROOT}/usr/include/opencv/
 )
 
 link_directories(
   ${CMAKE_SYSROOT}/usr/lib/hbbpu/
+  ${CMAKE_SYSROOT}/usr/hobot/lib/
   ${CMAKE_SYSROOT}/usr/lib/hbmedia/
 )
 
