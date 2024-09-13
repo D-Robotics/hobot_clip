@@ -25,6 +25,12 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
 
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+list(APPEND CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+list(APPEND CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+string(REGEX REPLACE ";" " " CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+string(REGEX REPLACE ";" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
