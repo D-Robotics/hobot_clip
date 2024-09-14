@@ -27,7 +27,9 @@ GetImageFeatureClient::GetImageFeatureClient(const rclcpp::NodeOptions & options
 
 int GetImageFeatureClient::send_goal(std::vector<std::string>& urls, 
                         int timeout_seconds) {
-    
+  if (urls.size() == 0) {
+    return 0;
+  }
   RCLCPP_WARN(this->get_logger(), "Action client recved goal");
   std::unique_lock<std::mutex> lock(goal_response_mutex_);
   RCLCPP_WARN(this->get_logger(), "Action client got lock");

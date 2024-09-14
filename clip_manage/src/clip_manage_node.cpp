@@ -91,22 +91,6 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
      << "\n topk: " << topk_;
   RCLCPP_WARN(rclcpp::get_logger("ClipNode"), "%s", ss.str().c_str());
 
-  encode_image_client_ = std::make_shared<GetImageFeatureClient>();
-  sp_task_image = 
-    std::make_shared<std::thread>([this](){
-    rclcpp::executors::MultiThreadedExecutor exec;
-    exec.add_node(encode_image_client_);
-    exec.spin();
-    });
-
-  encode_text_client_ = std::make_shared<GetTextFeatureClient>();
-  sp_task_text = 
-    std::make_shared<std::thread>([this](){
-    rclcpp::executors::MultiThreadedExecutor exec;
-    exec.add_node(encode_text_client_);
-    exec.spin();
-    });
-
   db.initialize(db_file_);
   if (!db.createTable()) {
     RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
@@ -115,8 +99,22 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
   }
   RCLCPP_INFO(rclcpp::get_logger("ClipNode"), "ClipNode start."); 
   if (mode_ == 0) {
+    encode_image_client_ = std::make_shared<GetImageFeatureClient>();
+    sp_task_image = 
+      std::make_shared<std::thread>([this](){
+      rclcpp::executors::MultiThreadedExecutor exec;
+      exec.add_node(encode_image_client_);
+      exec.spin();
+    });
     Storage();
   } else {
+    encode_text_client_ = std::make_shared<GetTextFeatureClient>();
+    sp_task_text = 
+      std::make_shared<std::thread>([this](){
+      rclcpp::executors::MultiThreadedExecutor exec;
+      exec.add_node(encode_text_client_);
+      exec.spin();
+    });
     Run();
   }
 }
@@ -188,6 +186,7 @@ int ClipNode::Run() {
       }));
     int ret = encode_text_client_->send_goal(texts, 10000);
   }
+  return 0;
 }
 
 
@@ -240,6 +239,7 @@ int ClipNode::Storage() {
   RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
             "Storage finish, current num of database: %d.",
             db.getItemCount());
+  return 0;
 }
 
 // 定义函数，过滤出 type 为 false 的 ClipItem

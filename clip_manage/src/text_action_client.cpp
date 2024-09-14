@@ -27,7 +27,9 @@ GetTextFeatureClient::GetTextFeatureClient(const rclcpp::NodeOptions & options)
 
 int GetTextFeatureClient::send_goal(std::vector<std::string>& texts, 
                         int timeout_seconds) {
-    
+  if (texts.size() == 0) {
+    return 0;
+  }
   RCLCPP_WARN(this->get_logger(), "Action client recved goal");
   std::unique_lock<std::mutex> lock(goal_response_mutex_);
   RCLCPP_WARN(this->get_logger(), "Action client got lock");
