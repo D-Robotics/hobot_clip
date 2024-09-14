@@ -70,7 +70,7 @@ bool ClipItemDatabase::insertItem(const ClipItem& item) {
 
   // Check if item with the same URL already exists
   if (itemExists(item)) {
-    RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
+    RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
         "Item with URL %s already exists. Skipping insertion.", item.url.c_str());
     return true; // Assuming item already exists is not an error condition
   }
