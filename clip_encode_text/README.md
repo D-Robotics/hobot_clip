@@ -34,13 +34,15 @@ string[] extra
 # Development Environment
 
 - Programming Language: C/C++
-- Development Platform: X5
+- Development Platform: X5/S100
 - System Version: Ubuntu 22.04
 - Compilation Toolchain: Linaro GCC 11.4.0
 
 # Compilation
 
 - X5 Version: Supports compilation on the X5 Ubuntu system and cross-compilation using Docker on a PC.
+
+- S100 Version: Supports compilation on the S100 Ubuntu system and cross-compilation using Docker on a PC.
 
 It also supports controlling the dependencies and functionality of the compiled pkg through compilation options.
 
@@ -61,11 +63,11 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
 - Shared memory transmission switch, enabled by default (ON), can be turned off during compilation using the -DSHARED_MEM=OFF command.
 - When enabled, compilation and execution depend on the hbm_img_msgs pkg and require the use of tros for compilation.
 - When disabled, compilation and execution do not depend on the hbm_img_msgs pkg, supporting compilation using native ROS and tros.
-- For shared memory communication, only subscription to nv12 format images is currently supported.## Compile on X3/Rdkultra Ubuntu System
+- For shared memory communication, only subscription to nv12 format images is currently supported.## Compile on RDK Ubuntu System
 
 1. Compilation Environment Verification
 
-- The X3 Ubuntu system is installed on the board.
+- The Ubuntu system is installed on the board.
 - The current compilation terminal has set up the TogetherROS environment variable: `source PATH/setup.bash`. Where PATH is the installation path of TogetherROS.
 - The ROS2 compilation tool colcon is installed. If the installed ROS does not include the compilation tool colcon, it needs to be installed manually. Installation command for colcon: `pip install -U colcon-common-extensions`.
 - The dnn node package has been compiled.
@@ -89,6 +91,9 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_encode_text
+
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_encode_text
   ```
 
 - Shared memory communication method is enabled by default in the compilation options.
@@ -108,7 +113,7 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
 
 ## Running
 
-## Running on X5 Ubuntu System
+## Running on Ubuntu System
 
 Running method 1, use the executable file to start:
 ```shell
@@ -126,7 +131,7 @@ ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=false -
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --log-level warn
 ```
 
-## Run on X5 buildroot system:
+## Run on buildroot system:
 
 ```shell
 export ROS_LOG_DIR=/userdata/
@@ -146,7 +151,7 @@ sudo tar -xf text_encoder.tar.gz -C config
 
 # Results Analysis
 
-## X5 Results Display
+## Results Display
 
 log:
 ```shell

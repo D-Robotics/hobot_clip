@@ -34,13 +34,15 @@ string[] extra
 # Development Environment
 
 - Programming Language: C/C++
-- Development Platform: X5
+- Development Platform: X5/S100
 - System Version: Ubuntu 22.04
 - Compilation Toolchain: Linaro GCC 11.4.0
 
 # Compilation
 
 - X5 Version: Supports compilation on the X5 Ubuntu system and cross-compilation using Docker on a PC.
+
+- S100 Version: Supports compilation on the S100 Ubuntu system and cross-compilation using Docker on a PC.
 
 It also supports controlling the dependencies and functionality of the compiled pkg through compilation options.
 
@@ -66,7 +68,7 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
 - Shared memory transmission switch, enabled by default (ON), can be turned off during compilation using the -DSHARED_MEM=OFF command.
 - When enabled, compilation and execution depend on the hbm_img_msgs pkg and require the use of tros for compilation.
 - When disabled, compilation and execution do not depend on the hbm_img_msgs pkg, supporting compilation using native ROS and tros.
-- For shared memory communication, only subscription to nv12 format images is currently supported.## Compile on X3/Rdkultra Ubuntu System
+- For shared memory communication, only subscription to nv12 format images is currently supported.## Compile on Ubuntu System
 
 1. Compilation Environment Verification
 
@@ -94,6 +96,9 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_emcpde_image
+
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_emcpde_image
   ```
 
 - Shared memory communication method is enabled by default in the compilation options.
@@ -111,11 +116,11 @@ hbm_img_msgs is a custom image message format used for image transmission in sha
 | image               | Local image path                       | No                   | config/CLIP.png     |                                                                         |
 | is_shared_mem_sub   | Subscribe to images using shared memory communication method | No  | 0                   |                                                                         |
 | is_sync_mode     | Installer inference mode, 0: synchronous; 1: Asynchronous       | No                   | 0                   |                                                                         |
-| model_file_name  | dnn model file name | No | config/full_model_11.bin |                                                                      |
+| model_file_name  | dnn model file name | No | config/full_model_11.bin; s100 version: config/full_model_11.hbm |                                                                      |
 
 ## Running
 
-## Running on X3 Ubuntu System
+## Running on X5 Ubuntu System
 
 Running method 1, use the executable file to start:
 ```shell
@@ -126,10 +131,10 @@ source ./install/local_setup.bash
 cp -r install/lib/clip_encode_image/config/ .
 
 # Run mode 1: Use local PNG format depth map to perform recharge prediction through synchronous mode:
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=0 -p image:=config/CLIP.png
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=0 -p image:=config/CLIP.png -p model_file_name:=config/full_model_11.bin
 
 # Run mode 2: Set up a subscription/service model, use the subscribed image msg (topic/image_raw) to make predictions through asynchronous mode, wait for action client service requests, and set the log level to warn:
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 ```
 
 ## Run on X5 buildroot system:
@@ -142,10 +147,10 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 cp -r install/lib/clip_emcpde_image/config/ .
 
 # Run mode 1: Use local PNG format depth map to perform recharge prediction through synchronous mode:
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p  feed_type:=0 -p image:=config/CLIP.png
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p  feed_type:=0 -p image:=config/CLIP.png -p model_file_name:=config/full_model_11.bin
 
 # Run mode 2: Set up a subscription/service model, use the subscribed image msg (topic/image_raw) to make predictions through asynchronous mode, wait for action client service requests, and set the log level to warn:
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 ```
 
 
@@ -156,7 +161,7 @@ cp -r install/lib/clip_emcpde_image/config/ .
 log:
 ```shell
 # Run Terminal 1: Start Subscription/Service Mode
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # Run Terminal 2: Send Reasoning Request
 ros2 action send_goal /clip_image_action clip_msgs/action/GetFeatures "{type: true, urls: ['config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png'], texts: []}"

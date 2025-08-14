@@ -170,8 +170,8 @@ int ClipEncodeImageNode::PostProcess(
   }
 
   // 1. 解析模型输出向量
-  hbSysFlushMem(&(encode_image_output->output_tensors[0]->sysMem[0]), HB_SYS_MEM_CACHE_INVALIDATE);
-  float *data = reinterpret_cast<float *>(encode_image_output->output_tensors[0]->sysMem[0].virAddr);
+  encode_image_output->output_tensors[0]->CACHE_INVALIDATE();
+  float *data = encode_image_output->output_tensors[0]->GetTensorData<float>();
   std::vector<float> float_vector(feature_size_);
   std::copy(data, data + feature_size_, float_vector.begin());
 

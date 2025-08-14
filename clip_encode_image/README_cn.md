@@ -29,13 +29,15 @@ string[] extra
 # 开发环境
 
 - 编程语言: C/C++
-- 开发平台: X5
+- 开发平台: X5/S100
 - 系统版本：Ubuntu 22.04
 - 编译工具链:Linux GCC 11.4.0
 
 # 编译
 
 - X5版本：支持在X5 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
+
+- S100版本：支持在S100 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
 
 ## 依赖库
 
@@ -61,7 +63,7 @@ hbm_img_msgs为自定义的图片消息格式，用于shared mem场景下的图�
 - 如果关闭，编译和运行不依赖hbm_img_msgs pkg，支持使用原生ros和tros进行编译。
 - 对于shared mem通信方式，当前只支持订阅nv12格式图片。
 
-## X5 Ubuntu系统上编译
+## RDK Ubuntu系统上编译
 
 1、编译环境确认
 
@@ -74,7 +76,7 @@ hbm_img_msgs为自定义的图片消息格式，用于shared mem场景下的图�
 
 - 编译命令：`colcon build --packages-select clip_encode_image`
 
-## docker交叉编译 X5 版本
+## docker交叉编译
 
 1、编译环境确认
 
@@ -89,6 +91,9 @@ hbm_img_msgs为自定义的图片消息格式，用于shared mem场景下的图�
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_encode_image
+
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_encode_image
   ```
 
 - 编译选项中默认打开了shared mem通信方式。
@@ -105,7 +110,7 @@ hbm_img_msgs为自定义的图片消息格式，用于shared mem场景下的图�
 | image              | 本地图片地址                          | 否                   | config/CLIP.png     |
 | is_shared_mem_sub  | 使用shared mem通信方式订阅图片        | 否                   | 0                   | 
 | is_sync_mode  | 推理模式，0：同步；1：异步        | 否                   | 0                   | 
-| model_file_name        | 模型文件            | 否 | config/full_model_11.bin                   |
+| model_file_name        | 模型文件            | 否 | config/full_model_11.bin; S100 需使用 config/full_model_11.hbm |
 
 
 ## 运行
@@ -121,10 +126,10 @@ source ./install/local_setup.bash
 cp -r install/lib/clip_encode_image/config/ .
 
 # 运行模式1：使用本地png格式深度图通过同步模式进行回灌预测
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=0 -p image:=config/CLIP.png
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=0 -p image:=config/CLIP.png -p model_file_name:=config/full_model_11.bin
 
 # 运行模式2：设置订阅/服务模型, 使用订阅到的image msg(topic为/image_raw) 通过异步模式进行预测, 等待action client 服务请求, 并设置log级别为warn
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 ```
 
 ## X5 buildroot系统上运行
@@ -137,10 +142,10 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 cp -r install/lib/clip_encode_image/config/ .
 
 # 运行模式1：使用本地png格式深度图通过同步模式进行回灌预测
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p  feed_type:=0 -p image:=config/CLIP.png
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p  feed_type:=0 -p image:=config/CLIP.png -p model_file_name:=config/full_model_11.bin
 
 # 运行模式2：设置订阅/服务模型, 使用订阅到的image msg(topic为/image_raw) 通过异步模式进行预测, 等待action client 服务请求, 并设置log级别为warn
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 ```
 
@@ -153,7 +158,7 @@ log：
 运行命令：
 ```shell
 # 运行终端1：启动订阅/服务 模式
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # 运行终端2：发送推理请求
 ros2 action send_goal /clip_image_action clip_msgs/action/GetFeatures "{type: true, urls: ['config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png', 'config/CLIP.png'], texts: []}"
