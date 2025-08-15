@@ -54,17 +54,18 @@ include_directories(include
 if(PLATFORM_X5)
   message("build platform X5")
   set(PREFIX_PATH x5)
-elseif(PLATFORM_X86)
-  message("build platform X86")
-  set(PREFIX_PATH x3)
+elseif(PLATFORM_S100)
+  message("build platform S100")
+  set(PREFIX_PATH s100)
 else()
-  message("invalid platform, build platform X3 default")
-  set(PREFIX_PATH x3)
+  message("invalid platform, build platform X5 default")
+  set(PREFIX_PATH x5)
 endif()
 
 message("CMAKE_SYSROOT is " ${CMAKE_SYSROOT})
 include_directories(
   ${CMAKE_SYSROOT}/usr/include/
+  ${CMAKE_SYSROOT}/usr/include/hobot/
   ${CMAKE_SYSROOT}/usr/hobot/include/
   ${CMAKE_SYSROOT}/usr/include/opencv/
 )

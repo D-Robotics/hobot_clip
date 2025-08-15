@@ -1,5 +1,9 @@
 # Changelog for package clip encode text node
 
+tros_0.3.0 (2025-08-14)
+------------------
+1. 适配RDK S100 版本。
+
 tros_0.2.0 (2024-09-06)
 ------------------
 1. 新增英文README。

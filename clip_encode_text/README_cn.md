@@ -29,13 +29,15 @@ string[] extra
 # 开发环境
 
 - 编程语言: C/C++
-- 开发平台: X5
+- 开发平台: X5/S100
 - 系统版本：Ubuntu 22.04
 - 编译工具链:Linux GCC 11.4.0
 
 # 编译
 
 - X5版本：支持在X5 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
+
+- S100版本：支持在X5 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
 
 ## 依赖库
 
@@ -45,7 +47,7 @@ ros package：
 
 ## 编译选项
 
-## X5 Ubuntu系统上编译
+## Ubuntu系统上编译
 
 1、编译环境确认
 
@@ -58,7 +60,7 @@ ros package：
 
 - 编译命令：`colcon build --packages-select clip_encode_text`
 
-## docker交叉编译 X5 版本
+## docker交叉编译
 
 1、编译环境确认
 
@@ -71,6 +73,9 @@ ros package：
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_encode_text
+  
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_encode_text
   ```
 
 - 编译选项中默认打开了shared mem通信方式。
@@ -90,7 +95,7 @@ ros package：
 
 ## 运行
 
-## X5 Ubuntu系统上运行
+## Ubuntu系统上运行
 
 运行方式1，使用可执行文件启动：
 ```shell
@@ -109,7 +114,7 @@ ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=false -
 ros2 run clip_encode_text clip_encode_text_node --ros-args -p feed_type:=true --log-level warn
 ```
 
-## X5 buildroot系统上运行
+## buildroot系统上运行
 
 ```shell
 export ROS_LOG_DIR=/userdata/
@@ -131,7 +136,7 @@ sudo tar -xf text_encoder.tar.gz -C config
 
 # 结果分析
 
-## X5结果展示
+## 结果展示
 
 log：
 

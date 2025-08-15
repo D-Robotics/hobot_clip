@@ -33,13 +33,15 @@ string[] extra
 # Development Environment
 
 - Programming Language: C/C++
-- Development Platform: X5
+- Development Platform: X5/S100
 - System Version: Ubuntu 22.04
 - Compilation Toolchain: Linaro GCC 11.4.0
 
 # Compilation
 
 - X5 Version: Supports compilation on the X5 Ubuntu system and cross-compilation using Docker on a PC.
+
+- S100 Version: Supports compilation on the S100 Ubuntu system and cross-compilation using Docker on a PC.
 
 It also supports controlling the dependencies and functionality of the compiled pkg through compilation options.
 
@@ -51,7 +53,7 @@ ROS Packages:
 
 - clip_msgs
 
-## Docker Cross-Compilation for X5 Version
+## Docker Cross-Compilation
 
 1. Compilation Environment Verification
 
@@ -64,6 +66,9 @@ ROS Packages:
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_manage
+
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_manage
   ```
 
 ## Notes
@@ -101,7 +106,7 @@ source ./install/local_setup.bash
 
 # - Terminal 1: Start clip_encode_image node service mode.
 cp -r ./install/lib/clip_encode_image/config .
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # - Terminal 2: Send image encode Request
 ros2 run clip_manage clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p storage_folder:=/userdata/config
@@ -127,10 +132,10 @@ source ./install/setup.bash
 cp -r install/lib/dnn_node_example/config/ .
 
 # Run mode 1: Storage, using local images for storage operation
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0 clip_image_model_file_name:=config/full_model_11.bin
 
 # Run mode 2: Query, sending text client, and search for images with features in the database
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1 clip_text:="a diagram"
 ```
 
 ## Run on X5 buildroot system:
@@ -146,7 +151,7 @@ cp -r install/lib/clip_encode_text/config/ .
 
 # - Terminal 1: Start clip_encode_image node service mode.
 cp -r ./install/lib/clip_encode_image/config .
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # - Terminal 2: Send image encode Request
 ./install/lib/clip_manage/clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p storage_folder:=/userdata/config
@@ -157,7 +162,7 @@ cp -r ./install/lib/clip_encode_image/config .
 # - Terminal 1: Start clip_encode_text node service mode.
 wget http://archive.d-robotics.cc/models/clip_encode_text/text_encoder.tar.gz
 sudo tar -xf text_encoder.tar.gz -C config
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+./install/lib/clip_encode_text/clip_encode_text_node --ros-args -p feed_type:=true --log-level info
 
 # - Terminal 2: Send text encode Request, and search for images with features in the database.
 ./install/lib/clip_manage/clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p storage_folder:=/userdata/config
@@ -173,7 +178,7 @@ Run command:
 ```shell
 source /opt/ros/humble/setup.bash
 source ./install/setup.bash
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0 clip_image_model_file_name:=config/full_model_11.bin
 ```
 
 log:
@@ -223,7 +228,7 @@ Run command:
 ```shell
 source /opt/ros/humble/setup.bash
 source ./install/setup.bash
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1 clip_text:="a diagram"
 ```
 
 
@@ -280,10 +285,10 @@ cp_cmd is  cp -r /userdata/install/lib/clip_manage/config/index.html .
 # Start the web service to view the query results, and make sure that /userdata is the upper level directory of the query result.
 cp -r install/lib/clip_manage/config/index.html /userdata
 cd /userdata
-python -m http.server
+python -m http.server 8080
 ```
 
-Using Google Chrome or Edge, enter< http://IP:8000 >, you can view the image retrieval results (IP is the device IP address).
+Using Google Chrome or Edge, enter< http://IP:8080 >, you can view the image retrieval results (IP is the device IP address). If this port was used, you can use other avaiable port.
 
 ![image](./img/query_display.png)
 

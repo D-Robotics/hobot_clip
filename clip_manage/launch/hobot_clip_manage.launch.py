@@ -45,6 +45,9 @@ def generate_launch_description():
     result_folder_launch_arg = DeclareLaunchArgument(
         "clip_result_folder", default_value=TextSubstitution(text="/userdata/result")
     )
+    image_model_file_name_launch_arg = DeclareLaunchArgument(
+        "clip_image_model_file_name", default_value=TextSubstitution(text="config/full_model_11.bin")
+    )
 
     # recorder node 示例节点pkg
     clip_encode_image = Node(
@@ -54,6 +57,7 @@ def generate_launch_description():
         parameters=[
             {"feed_type": 1},
             {"is_sync_mode": 1},
+            {"model_file_name": LaunchConfiguration('clip_image_model_file_name')}
         ],
         arguments=['--ros-args', '--log-level', 'warn']
     )
@@ -88,6 +92,7 @@ def generate_launch_description():
         text_launch_arg,
         storage_folder_launch_arg,
         result_folder_launch_arg,
+        image_model_file_name_launch_arg,
         # clip encode image 编码服务节点pkg
         clip_encode_image,
         # clip encode text 编码服务节点pkg

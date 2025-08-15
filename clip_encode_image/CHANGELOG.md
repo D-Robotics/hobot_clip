@@ -1,5 +1,9 @@
 # Changelog for package clip encode image node
 
+tros_0.3.0 (2025-08-14)
+------------------
+1. 适配RDK S100 版本。
+
 tros_0.2.0 (2024-07-16)
 ------------------
 1. 更新 GetBGRTensorFromBGR 接口使用方式, 

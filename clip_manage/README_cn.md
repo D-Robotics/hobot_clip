@@ -27,7 +27,7 @@ struct ClipItem {
 # 开发环境
 
 - 编程语言: C/C++
-- 开发平台: X5
+- 开发平台: X5/S100
 - 系统版本：Ubuntu 22.04
 - 编译工具链:Linux GCC 11.4.0
 
@@ -35,17 +35,19 @@ struct ClipItem {
 
 - X5版本：支持在X5 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
 
+- S100版本：支持在X5 Ubuntu系统上编译和在PC上使用docker交叉编译两种方式。
+
 ## 依赖库
 
 ros package：
 
 - clip_msgs
 
-## X5 Ubuntu系统上编译
+## RDK Ubuntu系统上编译
 
 1、编译环境确认
 
-- 板端已安装X5 Ubuntu系统。
+- 板端已安装RDK Ubuntu系统。
 - 当前编译终端已设置TogetherROS环境变量：`source PATH/setup.bash`。其中PATH为TogetherROS的安装路径。
 - 已安装ROS2编译工具colcon。安装的ROS不包含编译工具colcon，需要手动安装colcon。colcon安装命令：`pip install -U colcon-common-extensions`
 
@@ -53,7 +55,7 @@ ros package：
 
 - 编译命令：`colcon build --packages-select clip_manage`
 
-## docker交叉编译 X5 版本
+## docker交叉编译
 
 1、编译环境确认
 
@@ -66,6 +68,9 @@ ros package：
   ```shell
   # RDK X5
   bash robot_dev_config/build.sh -p X5 -s clip_manage
+
+  # RDK S100
+  bash robot_dev_config/build.sh -p S100 -s clip_manage
   ```
 
 ## 注意事项
@@ -102,7 +107,7 @@ source ./install/local_setup.bash
 # 运行模式1：入库, 使用本地图片进行入库操作(需要先开启clip_encode_image的示例) 
 # - 终端1：启动 clip_encode_image节点服务模式
 cp -r ./install/lib/clip_encode_image/config .
-ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+ros2 run clip_encode_image clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # - 终端2：发送 image 图片编码请求
 ros2 run clip_manage clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p storage_folder:=/userdata/config
@@ -125,10 +130,10 @@ source /opt/ros/humble/setup.bash
 source ./install/setup.bash
 
 # 运行模式1：入库, 使用本地图片进行入库操作
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0 clip_image_model_file_name:=config/full_model_11.bin
 
 # 运行模式2：查询, 输入检索文本, 查询数据库中的图片
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1 clip_text:="a diagram"
 ```
 
 ## X5 buildroot系统上运行
@@ -140,7 +145,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./install/lib/
 # 运行模式1：入库, 使用本地图片进行入库操作(需要先开启clip_encode_image的示例) 
 # - 终端1：启动 clip_encode_image节点服务模式
 cp -r ./install/lib/clip_encode_image/config .
-./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1
+./install/lib/clip_encode_image/clip_encode_image --ros-args -p feed_type:=1 --log-level warn -p is_sync_mode:=1 -p model_file_name:=config/full_model_11.bin
 
 # - 终端2：发送 image 图片编码请求
 ./install/lib/clip_manage/clip_manage --ros-args -p mode:=0 -p db_file:=clip.db -p storage_folder:=/userdata/config
@@ -166,7 +171,7 @@ sudo tar -xf text_encoder.tar.gz -C config
 ```shell
 source /opt/ros/humble/setup.bash
 source ./install/setup.bash
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=0 clip_image_model_file_name:=config/full_model_11.bin
 ```
 
 log:
@@ -217,7 +222,7 @@ cp_cmd is  cp -r /userdata/install/lib/clip_manage/config/index.html .
 ```shell
 source /opt/ros/humble/setup.bash
 source ./install/setup.bash
-ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1
+ros2 launch clip_manage hobot_clip_manage.launch.py clip_mode:=1 clip_text:="a diagram"
 ```
 
 log:
@@ -271,9 +276,9 @@ cp_cmd is  cp -r /userdata/install/lib/clip_manage/config/index.html .
 # 打开另一个终端：启动Web服务查看检索结果, 确保/userdata为检索结果result的上一级目录。
 cp -r install/lib/clip_manage/config/index.html /userdata
 cd /userdata
-python -m http.server
+python -m http.server 8080
 ```
-使用谷歌浏览器或Edge，输入<http://IP:8000>，即可查看图像检索结果（IP为设备IP地址）。
+使用谷歌浏览器或Edge浏览器，输入<http://IP:8080>，即可查看图像检索结果（IP为设备IP地址）。如果端口冲突, 可以变更为其他端口
 
 ![image](./img/query_display.png)
 
