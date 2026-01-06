@@ -1,5 +1,9 @@
 # Changelog for package clip encode text node
 
+tros_1.0.0 (2026-01-06)
+------------------
+1. 适配RDK S600 版本, 对应 Ubuntu 24.04 python 版本进行适配。
+
 tros_0.3.0 (2025-08-14)
 ------------------
 1. 适配RDK S100 版本。
