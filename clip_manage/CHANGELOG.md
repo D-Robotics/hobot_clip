@@ -1,5 +1,9 @@
 # Changelog for package clip manage node
 
+tros_1.0.0 (2026-01-06)
+------------------
+1. 适配RDK S100 版本。
+
 tros_0.3.0 (2025-08-14)
 ------------------
 1. 适配RDK S100 版本。

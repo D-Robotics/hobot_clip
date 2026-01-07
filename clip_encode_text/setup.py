@@ -11,7 +11,9 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('lib/python3.10/site-packages/' + package_name + '/clip', 
-            ['config/' + 'bpe_simple_vocab_16e6.txt.gz'])
+            ['config/' + 'bpe_simple_vocab_16e6.txt.gz']),
+        ('lib/python3.12/site-packages/' + package_name + '/clip', 
+            ['config/' + 'bpe_simple_vocab_16e6.txt.gz'])   
     ],
     install_requires=['setuptools'],
     zip_safe=True,
