@@ -20,6 +20,7 @@
 #include <stack>
 
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
 
 #include "include/database.h"
 #include "include/item.h"
@@ -46,7 +47,7 @@ public:
 
 private:
 
-  int mode_ = 0; // mode 为 0, 入库, mode 为 1, 查询
+  int mode_ = 0; // mode 为 0, 入库； mode 为 1, text查询； mode 为 2, 循环image查询
   std::string db_file_ = "clip.db";
   std::string text_ = "a diagram";
   std::string storage_folder_ = "/userdata/config";
@@ -58,8 +59,15 @@ private:
   std::shared_ptr<GetImageFeatureClient> encode_image_client_ = nullptr;
   std::shared_ptr<GetTextFeatureClient> encode_text_client_ = nullptr;
 
-  std::shared_ptr<std::thread> sp_task_image;
-  std::shared_ptr<std::thread> sp_task_text;
+  std::shared_ptr<std::thread> sp_task_image = nullptr;
+  std::shared_ptr<std::thread> sp_task_text = nullptr;
+
+private:
+  std::string queried_res_topic_ = "tros_queried_res";
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr queried_res_pub_ = nullptr;
+  
+  int queryWImage(std::vector<std::string> urls);
+  std::shared_ptr<std::thread> sp_task_cyclic_query = nullptr;
 };
 
 #endif  // CLIP_MANAGE_H_
