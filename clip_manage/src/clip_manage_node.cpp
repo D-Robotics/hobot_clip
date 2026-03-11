@@ -73,6 +73,7 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
   this->declare_parameter<std::string>("storage_folder", storage_folder_);
   this->declare_parameter<std::string>("text", text_);
   this->declare_parameter<int>("topk", topk_);
+  this->declare_parameter<std::string>("queried_res_topic", queried_res_topic_);
 
   this->get_parameter<int>("mode", mode_);
   this->get_parameter<std::string>("db_file", db_file_);
@@ -80,15 +81,17 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
   this->get_parameter<std::string>("storage_folder", storage_folder_);
   this->get_parameter<std::string>("text", text_);
   this->get_parameter<int>("topk", topk_);
+  this->get_parameter<std::string>("queried_res_topic", queried_res_topic_);
 
   std::stringstream ss;
   ss << "Parameter:"
-     << "\n mode(0:storage, 1:query): " << mode_
+     << "\n mode(0:storage, 1:text query, 2:cyclic image query): " << mode_
      << "\n db file: " << db_file_
      << "\n storage folder: " << storage_folder_
      << "\n text: " << text_
      << "\n result folder: " << result_folder_
-     << "\n topk: " << topk_;
+     << "\n topk: " << topk_
+     << "\n queried_res_topic: " << queried_res_topic_;
   RCLCPP_WARN(rclcpp::get_logger("ClipNode"), "%s", ss.str().c_str());
 
   db.initialize(db_file_);
@@ -98,6 +101,9 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
     return;
   }
   RCLCPP_INFO(rclcpp::get_logger("ClipNode"), "ClipNode start."); 
+
+  queried_res_pub_ = this->create_publisher<std_msgs::msg::String>(queried_res_topic_, 1);
+
   if (mode_ == 0) {
     encode_image_client_ = std::make_shared<GetImageFeatureClient>();
     sp_task_image = 
@@ -107,7 +113,7 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
       exec.spin();
     });
     Storage();
-  } else {
+  } else if (mode_ == 1) {
     encode_text_client_ = std::make_shared<GetTextFeatureClient>();
     sp_task_text = 
       std::make_shared<std::thread>([this](){
@@ -116,6 +122,32 @@ ClipNode::ClipNode(const std::string &node_name, const NodeOptions &options)
       exec.spin();
     });
     Run();
+  } else if (mode_ == 2) {
+    encode_image_client_ = std::make_shared<GetImageFeatureClient>();
+    sp_task_image = 
+      std::make_shared<std::thread>([this](){
+      rclcpp::executors::MultiThreadedExecutor exec;
+      exec.add_node(encode_image_client_);
+      exec.spin();
+    });
+    sp_task_cyclic_query = 
+      std::make_shared<std::thread>([this](){
+        while (rclcpp::ok()) {
+          std::vector<std::string> urls;
+          getImagesFromDirectory(storage_folder_, urls);
+          if (urls.empty()) {
+            rclcpp::sleep_for(std::chrono::milliseconds(100));
+            continue;
+          }
+          queryWImage(urls);
+          for (const auto& url : urls) {
+            std::system(("rm " + url).c_str());
+          }
+        }
+      });
+  } else {
+    RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
+      "Invalid mode.");
   }
 }
 
@@ -129,6 +161,9 @@ ClipNode::~ClipNode() {
   {
     sp_task_image->join();
     sp_task_image.reset();
+  }
+  if (sp_task_cyclic_query && sp_task_cyclic_query->joinable()) {
+    sp_task_cyclic_query->join();
   }
   rclcpp::shutdown();
 }
@@ -176,11 +211,26 @@ int ClipNode::Run() {
           auto& item = target_items[i];
           RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
               "Query Result %s, similarity: %f", item.url.c_str(), item.similarity);
-          std::string command = "ln -s " + item.url + " " + result_folder_ + "/" + std::to_string(i) + ".jpg";
+              
+          size_t last_slash_pos = item.url.find_last_of('/');
+          std::string filename;
+          if (last_slash_pos == std::string::npos) {
+              filename = item.url;
+          } else {
+              filename = item.url.substr(last_slash_pos + 1);
+          }
+          filename = std::to_string(i) + "_" + std::to_string(item.similarity) + "_" + filename;
+          std::string command = "ln -s " + item.url + " " + result_folder_ + "/" + filename;
           int result = std::system(command.c_str());
           if (result != 0) {
             RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
-              "Link file %s failed.", item.url);
+              "Link file %s failed.", item.url.data());
+          }
+
+          if (queried_res_pub_) {
+            std_msgs::msg::String item_url;
+            item_url.data = item.url;
+            queried_res_pub_->publish(item_url);
           }
         }
       }));
@@ -240,6 +290,64 @@ int ClipNode::Storage() {
             "Storage finish, current num of database: %d.",
             db.getItemCount());
   return 0;
+}
+
+int ClipNode::queryWImage(std::vector<std::string> urls) {
+  for (const auto& url : urls) {
+    RCLCPP_INFO(this->get_logger(),
+                "url: %s.", url.data());
+  }
+
+  if (!encode_image_client_) {
+    RCLCPP_ERROR(this->get_logger(),
+      "encode_image_client_ is null.");
+    return -1;
+  }
+  
+  encode_image_client_->set_feedback_callback(std::function<void(const std::shared_ptr<const clip_msgs::action::GetFeatures_Feedback_<std::allocator<void>>>)>(
+    [&](const std::shared_ptr<const clip_msgs::action::GetFeatures_Feedback_<std::allocator<void>>> feedback) {
+      auto& item = feedback->item;
+      std::stringstream ss;
+      ss << "Received feedback: ["
+        << feedback->current_progress << "]"
+        << " url: " << feedback->item.url;
+      RCLCPP_INFO(this->get_logger(), "%s", ss.str().c_str());
+
+      ClipItem clipitem;
+      clipitem.type = feedback->item.type;
+      clipitem.url = feedback->item.url;
+      // clipitem.name = feedback->item.name;
+
+      clipitem.feature.assign(feedback->item.feature.begin(), feedback->item.feature.end()); // 复制特征值
+      clipitem.extra.assign(feedback->item.extra.begin(), feedback->item.extra.end());       // 复制额外信息
+      
+      const float* data_text = clipitem.feature.data();
+      std::vector<ClipItem> target_items;
+
+      auto start = std::chrono::high_resolution_clock::now();
+      Query(data_text, target_items);
+      
+      auto end = std::chrono::high_resolution_clock::now();
+
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+      RCLCPP_INFO(this->get_logger(),
+              "Query finished! Cost %d ms.", duration.count());
+
+      for (int i = 0; i < target_items.size(); i++) {
+        auto& item = target_items[i];
+        RCLCPP_INFO(this->get_logger(),
+            "Query Result %s, similarity: %f", item.url.c_str(), item.similarity);
+            
+        if (queried_res_pub_) {
+          std_msgs::msg::String item_url;
+          item_url.data = item.url;
+          queried_res_pub_->publish(item_url);
+        }
+      }
+
+    }));
+
+  return encode_image_client_->send_goal(urls, 10000);
 }
 
 // 定义函数，过滤出 type 为 false 的 ClipItem

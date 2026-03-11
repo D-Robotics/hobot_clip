@@ -26,6 +26,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(clip_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 include_directories(include
   ${PROJECT_SOURCE_DIR}
@@ -47,6 +48,7 @@ ament_target_dependencies(
   rclcpp_action
   SQLite3
   clip_msgs
+  std_msgs
 )
 
 install(TARGETS ${PROJECT_NAME}
