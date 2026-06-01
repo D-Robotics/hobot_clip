@@ -19,6 +19,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <unordered_set>
 
 #include "include/clip_manage_node.h"
 #include "include/database.h"
@@ -245,13 +246,13 @@ int ClipNode::Storage() {
   std::vector<std::string> urls;
   getImagesFromDirectory(storage_folder_, urls);
   
-  // std::vector<std::string> target_urls;
-  // for (const auto& url : urls) {
-  //   if (!db.urlExists(url)) {
-  //     target_urls.push_back(url);
-  //   } 
-  // }
-  // swap(target_urls, urls);
+  std::vector<std::string> target_urls;
+  for (const auto& url : urls) {
+    if (!db.urlExists(url)) {
+      target_urls.push_back(url);
+    }
+  }
+  swap(target_urls, urls);
 
   RCLCPP_INFO(rclcpp::get_logger("ClipNode"),
               "Storage size: %d.", urls.size());
@@ -277,8 +278,11 @@ int ClipNode::Storage() {
         clipitem.extra.assign(feedback->item.extra.begin(), feedback->item.extra.end());       // 复制额外信息
         // std::cout << clipitem << std::endl;
         
-        if (!db.insertItem(clipitem)) {
-          RCLCPP_ERROR(rclcpp::get_logger("ClipNode"), "Failed to insert item.");
+        {
+          std::lock_guard<std::mutex> lock(db_mutex_);
+          if (!db.insertItem(clipitem)) {
+            RCLCPP_ERROR(rclcpp::get_logger("ClipNode"), "Failed to insert item.");
+          }
         }
 
       }));
@@ -286,6 +290,7 @@ int ClipNode::Storage() {
     int ret = encode_image_client_->send_goal(urls, 10000);
   }
 
+  db.removeDuplicates();
   RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
             "Storage finish, current num of database: %d.",
             db.getItemCount());
@@ -359,12 +364,17 @@ int ClipNode::Query(const float *data,
           "Query start, num of database: %d.", num);
   num = (num / 10) + 1;
 
+  std::unordered_set<std::string> seen_urls;
   for (int i = 0; i < num; i++) {
     std::vector<ClipItem> image_items = db.queryItemsByPage(i, 10);
     for (auto& item : image_items) {
       if (!item.type) {
         continue;
       }
+      if (seen_urls.count(item.url)) {
+        continue;
+      }
+      seen_urls.insert(item.url);
       const float* data_image = item.feature.data();
       item.similarity = cosine_similarity(data_image, data);
       target_items.push_back(item);

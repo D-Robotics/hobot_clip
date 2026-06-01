@@ -146,6 +146,30 @@ bool ClipItemDatabase::urlExists(const std::string& url) {
   return (result > 0);
 }
 
+int ClipItemDatabase::removeDuplicates() {
+  const char* sql =
+    "DELETE FROM ClipItems WHERE id NOT IN ("
+    "SELECT MIN(id) FROM ClipItems GROUP BY url"
+    ");";
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
+        "Remove duplicates failed to prepare: %s", sqlite3_errmsg(db));
+    return -1;
+  }
+  if (sqlite3_step(stmt) != SQLITE_DONE) {
+    RCLCPP_ERROR(rclcpp::get_logger("ClipNode"),
+        "Remove duplicates failed to execute: %s", sqlite3_errmsg(db));
+    sqlite3_finalize(stmt);
+    return -1;
+  }
+  int removed = sqlite3_changes(db);
+  sqlite3_finalize(stmt);
+  RCLCPP_WARN(rclcpp::get_logger("ClipNode"),
+      "Removed %d duplicate records.", removed);
+  return removed;
+}
+
 bool ClipItemDatabase::isValidItem(const ClipItem& item) {
   return (!item.url.empty() && !item.feature.empty());
 }
