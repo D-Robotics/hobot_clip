@@ -1,4 +1,4 @@
-# Copyright (c) 2024，Horizon Robotics.
+# Copyright (c) 2026，D-Robotics.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,15 +53,19 @@ include_directories(include
 
 if(PLATFORM_X5)
   message("build platform X5")
+  add_definitions(-DPLATFORM_X5)
   set(PREFIX_PATH x5)
 elseif(PLATFORM_S100)
   message("build platform S100")
+  add_definitions(-DPLATFORM_S100)
   set(PREFIX_PATH s100)
 elseif(PLATFORM_S600)
   message("build platform S600")
+  add_definitions(-DPLATFORM_S600)
   set(PREFIX_PATH s600)
 else()
   message("invalid platform, build platform X5 default")
+  add_definitions(-DPLATFORM_X5)
   set(PREFIX_PATH x5)
 endif()
 
@@ -83,6 +87,7 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/action_server.cpp
   src/clip_encode_image_node.cpp
+  src/image_proc.cpp
 )
 
 ament_target_dependencies(

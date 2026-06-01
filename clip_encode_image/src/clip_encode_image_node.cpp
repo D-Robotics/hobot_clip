@@ -1,4 +1,4 @@
-// Copyright (c) 2024，Horizon Robotics.
+// Copyright (c) 2026，D-Robotics.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "dnn_node/dnn_node.h"
-#include "dnn_node/util/image_proc.h"
+#include "include/image_proc.h"
 #include "rclcpp/rclcpp.hpp"
 
 #include "opencv2/core/mat.hpp"
@@ -388,7 +388,7 @@ int ClipEncodeImageNode::FeedFromLocal(std::string& url) {
   float ratio;
   tensor = hobot::dnn_node::ImageProc::GetBGRTensorFromBGR(url,
       model_input_height_, model_input_width_, tensor_properties,
-      ratio, hobot::dnn_node::ImageType::BGR, true, true, true);
+      ratio, hobot::dnn_node::ImageType::BGR);
 
   if (!tensor) {
     RCLCPP_ERROR(rclcpp::get_logger("ClipImageNode"),
