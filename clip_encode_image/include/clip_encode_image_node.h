@@ -1,4 +1,4 @@
-// Copyright (c) 2024，Horizon Robotics.
+// Copyright (c) 2026，D-Robotics.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,9 +60,14 @@ class ClipEncodeImageNode : public DnnNode {
 
  private:
   // 用于预测的图片来源，0：订阅到的image msg；1：本地nv12格式图片
-  int feed_type_ = 1;
+  int feed_type_ = 0;
   std::string image_ = "config/CLIP.png";
+  
+#ifdef PLATFORM_X5
   std::string model_file_name_ = "config/full_model_11.bin";
+#else
+  std::string model_file_name_ = "config/full_model_11.hbm";
+#endif
   std::string model_name_ = "full_model_11";
   ModelTaskType model_task_type_ = ModelTaskType::ModelInferType;
 

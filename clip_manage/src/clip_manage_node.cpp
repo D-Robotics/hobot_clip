@@ -219,7 +219,7 @@ int ClipNode::Run() {
           } else {
               filename = item.url.substr(last_slash_pos + 1);
           }
-          filename = std::to_string(i) + "_" + std::to_string(item.similarity) + "_" + filename;
+          filename = std::to_string(i) + filename.substr(filename.find_last_of('.'));
           std::string command = "ln -s " + item.url + " " + result_folder_ + "/" + filename;
           int result = std::system(command.c_str());
           if (result != 0) {

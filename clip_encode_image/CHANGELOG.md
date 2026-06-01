@@ -1,5 +1,9 @@
 # Changelog for package clip encode image node
 
+tros_1.1.0 (2026-06-01)
+------------------
+1. 修复 S100, S600 前处理推理错误问题。
+
 tros_1.0.0 (2026-01-06)
 ------------------
 1. 适配RDK S600 版本。
