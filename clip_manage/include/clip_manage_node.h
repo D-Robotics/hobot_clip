@@ -17,6 +17,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <mutex>
 #include <stack>
 
 #include <rclcpp/rclcpp.hpp>
@@ -53,6 +54,7 @@ private:
   std::string storage_folder_ = "/userdata/config";
   std::string result_folder_ = "/userdata/result";
   ClipItemDatabase db;
+  std::mutex db_mutex_;
 
   int topk_ = 10;
 

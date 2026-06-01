@@ -57,6 +57,9 @@ public:
   // 检查指定URL是否存在，返回布尔值
   bool urlExists(const std::string& url);
 
+  // 删除重复的URL记录，保留id最小的一条
+  int removeDuplicates();
+
 private:
   // SQLite数据库连接对象
   sqlite3* db;

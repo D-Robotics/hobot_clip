@@ -29,12 +29,8 @@
 #define ALIGN_4(w) ALIGNED_2E(w, 4U)
 #define ALIGN_8(w) ALIGNED_2E(w, 8U)
 #define ALIGN_16(w) ALIGNED_2E(w, 16U)
-#ifndef ALIGN_32
 #define ALIGN_32(w) ALIGNED_2E(w, 32U)
-#endif
-#ifndef ALIGN_64
 #define ALIGN_64(w) ALIGNED_2E(w, 64U)
-#endif
 
 #if defined(PLATFORM_X5)
 #define BPU_ALIGN(value) ALIGN_16(value)

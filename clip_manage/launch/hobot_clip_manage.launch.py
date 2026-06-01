@@ -49,7 +49,7 @@ def generate_launch_description():
         "clip_image_model_file_name", default_value=TextSubstitution(text="config/full_model_11.bin")
     )
     topk_launch_arg = DeclareLaunchArgument(
-        "clip_topk", default_value=TextSubstitution(text="5")
+        "clip_topk", default_value=TextSubstitution(text="10")
     )
 
     # recorder node 示例节点pkg
